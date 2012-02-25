@@ -50,6 +50,7 @@ def send():
                         subject='[muspy] New Release Notification',
                         text_template='email/release.txt',
                         html_template='email/release.html',
+                        from_text="Muspy Release Notification",
                         releases=release_groups,
                         root='http://muspy.com/')
                     if not result:

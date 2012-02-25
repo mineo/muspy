@@ -21,10 +21,10 @@ import string
 from time import sleep
 
 from django.contrib.auth.models import User
+from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.db import connection, IntegrityError, models, transaction
 from django.db.backends.signals import connection_created
-from django.db.models import Count, Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
@@ -377,12 +377,14 @@ class UserProfile(models.Model):
             cursor = connection.cursor()
             cursor.execute('DELETE FROM auth_user WHERE id=%s', [user.id])
 
-    def send_email(self, subject, text_template, html_template, **kwds):
+    def send_email(self, subject, text_template, html_template,
+                   from_text="muspy support", **kwds):
         text = render_to_string(text_template, kwds)
+        from_email = "%s <%s>" % (from_text, settings.SERVER_EMAIL)
         msg = EmailMultiAlternatives(
             subject,
             text,
-            'muspy support <info@muspy.com>',
+            from_email,
             [self.user.email])
         if html_template:
             html = render_to_string(html_template, kwds)
